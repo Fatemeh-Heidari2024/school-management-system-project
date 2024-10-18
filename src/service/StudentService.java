@@ -1,6 +1,7 @@
 package service;
 
 import dto.EnrollmentDTO;
+import dto.RequestStudentDTO;
 import model.Student;
 import repository.StudentRepository;
 import service.*;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentService {
+    int result;
     private StudentRepository studentRepository;
 
     public StudentService(StudentRepository studentRepository) {
@@ -39,12 +41,14 @@ public class StudentService {
         }
     }
     public void saveStudent(Student student){
-        if(student!=null)
-            studentRepository.addStudent(student);
+        try{
+            if(student!=null)
+                studentRepository.addStudent(student);
+        }catch(SQLException sqlException){
+            sqlException.printStackTrace();
+            System.out.println("add student failed");
+        }
     }
-//    public List< EnrollmentDTO > showStudentEnrollment(Long student_id){
-//        studentRepository.
-//    }
 
     public void getStudentByName(String name){
         List<Student> students=new ArrayList<>();
@@ -66,6 +70,29 @@ public class StudentService {
             }
         }catch(SQLException sqlException){
             sqlException.printStackTrace();
+        }
+    }
+
+    public boolean studentUpdate(RequestStudentDTO requestStudentDTO){
+        try{
+            int result=studentRepository.updateStudent(requestStudentDTO.getOldName(),requestStudentDTO.getNewName());
+            if(result>0) return true;
+
+        }catch(SQLException sqlException){
+            sqlException.printStackTrace();
+            System.out.println("update failed");
+        }
+        return false;
+    }
+    public void removeStudent(RequestStudentDTO requestStudentDTO){
+        try{
+            if(studentRepository.findById(requestStudentDTO.getId())!=null)
+            result=studentRepository.deleteStudent(requestStudentDTO.getNatCode());
+               if(result>0) System.out.println("delete student successful");
+            else System.out.println("delete student failed");
+        }catch(SQLException sqlException){
+            sqlException.printStackTrace();
+            System.out.println("connection failed");
         }
     }
 }

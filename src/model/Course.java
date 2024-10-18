@@ -9,6 +9,11 @@ public class Course extends BaseEntity{
         this.title = title;
         this.unit = unit;
     }
+    public Course( String title, int unit) {
+        this.title = title;
+        this.unit = unit;
+    }
+
 
     public String getTitle() {
         return title;
@@ -28,9 +33,9 @@ public class Course extends BaseEntity{
 
     @Override
     public String toString() {
-        return "Course{" +
-                "title='" + title + '\'' +
+        return "Course{" +super.toString()+
+                ", title='" + title + '\'' +
                 ", unit=" + unit +
-                '}';
+                "} ";
     }
 }

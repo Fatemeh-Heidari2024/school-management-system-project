@@ -51,4 +51,34 @@ public class TeacherRepository {
         }
         return count;
     }
+    public int deleteTeacher(long id)throws SQLException{
+        String deleteSql="delete from school_management.public.teacher where teacher_id=?";
+        PreparedStatement preparedStatement=dbConnection.getDatabaseConnection().prepareStatement(deleteSql);
+        preparedStatement.setLong(1,id);
+        return preparedStatement.executeUpdate();
+    }
+    public Teacher findById(long id)throws  SQLException{
+        String findSql="select * from school_management.public.teacher where teacher_id=?";
+        PreparedStatement preparedStatement=dbConnection.getDatabaseConnection().prepareStatement(findSql);
+        preparedStatement.setLong(1,id);
+        ResultSet resultSet=preparedStatement.executeQuery();
+        while(resultSet.next()){
+            return new Teacher(resultSet.getLong(1),
+                    resultSet.getString(2),
+                    resultSet.getString(3),
+                    resultSet.getString(4),
+                    resultSet.getDate(5).toLocalDate());
+        }
+        return null;
+    }
+
+    public int update(String newFirstName,String oldFirstName)throws SQLException{
+        /* language=sql */
+        String updateSql="update school_management.public.teacher set first_name=? where first_name=?";
+        PreparedStatement preparedStatement=dbConnection.getDatabaseConnection().prepareStatement(updateSql);
+        preparedStatement.setString(1,newFirstName);
+        preparedStatement.setString(2,oldFirstName);
+        int result=preparedStatement.executeUpdate();
+        return result;
+    }
 }

@@ -11,7 +11,9 @@ import java.util.List;
 import java.sql.Date;
 
 public class StudentRepository {
+    /* language=sql */
     DBConnection DB =new DBConnection();
+
     String sql="select * from school_management.public.student order by first_name desc";
     String sql1="select count(student_id) as c from school_management.public.student";
     public List< Student > getAllStudent() throws SQLException{
@@ -39,9 +41,7 @@ public class StudentRepository {
         return counts;
     }
 
-    public void addStudent(Student student) {
-
-        try {
+    public void addStudent(Student student) throws SQLException{
             DBConnection dbConnection = new DBConnection();
            // System.out.println("connection to DB successfully");
             String sql = " insert into school_management.public.student(first_name, last_name, national_code, dob,gpu) values(?,?,?,?,?)";
@@ -52,11 +52,6 @@ public class StudentRepository {
           preparedStatement.setDate(4, Date.valueOf(student.getDataOfBirth()));
           preparedStatement.setDouble(5,student.getGpu());
           preparedStatement.executeUpdate();
-        } catch (
-                SQLException sqlException) {
-            sqlException.printStackTrace();
-            System.out.println("connection to DB failed!");
-        }
     }
 
     public List< EnrollmentDTO > enrollment() throws SQLException {
@@ -86,6 +81,40 @@ public List<Student> getStudentByFirstName(String first_name)throws SQLException
                 resultSet.getDouble(6)));
     }
     return students;
+}
+
+public int updateStudent(String oldFirstName,String newFirstName)throws SQLException{
+    /* language=sql */
+        String updateSql="update school_management.public.student set first_name=? where first_name=?";
+        PreparedStatement preparedStatement=DB.getDatabaseConnection().prepareStatement(updateSql);
+        preparedStatement.setString(1,newFirstName);
+        preparedStatement.setString(2,oldFirstName);
+        int result=preparedStatement.executeUpdate();
+        return result;
+}
+public int deleteStudent(String natCode) throws SQLException{
+    /* language=sql */
+        String deleteQuery="delete from school_management.public.student where national_code=?";
+        PreparedStatement preparedStatement=DB.getDatabaseConnection().prepareStatement(deleteQuery);
+        preparedStatement.setString(1,natCode);
+       return preparedStatement.executeUpdate();
+       
+}
+
+public Student findById(long id)throws SQLException{
+        String findSql="select * from school_management.public.student where student_id=?";
+        PreparedStatement preparedStatement=DB.getDatabaseConnection().prepareStatement(findSql);
+        preparedStatement.setLong(1,id);
+        ResultSet resultSet=preparedStatement.executeQuery();
+        while(resultSet.next()){
+            return new Student(resultSet.getLong(1),
+                    resultSet.getString(2),
+                    resultSet.getString(3),
+                    resultSet.getString(4),
+                    resultSet.getDate(5).toLocalDate(),
+                    resultSet.getDouble(6));
+        }
+        return null;
 }
 
 }
